@@ -1,0 +1,42 @@
+[Unit]
+Description=iii caller-worker — TypeScript HTTP+RPC bridge for Gemma inference
+Documentation=https://github.com/Alchemyst-ai/hiring/tree/main/may-2026/devops
+
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+
+WorkingDirectory=/opt/caller-worker/may-2026/devops/quickstart/workers/caller-worker
+
+# ── Environment ───────────────────────────────────────────────────────────────
+# setup-caller.sh writes this file with III_URL=ws://10.0.1.10:49134
+EnvironmentFile=/opt/caller-worker-env
+
+# ── Main command ──────────────────────────────────────────────────────────────
+# tsx runs TypeScript source files directly using Node.js + esbuild.
+# The caller-worker:
+#   1. Connects to the iii Engine WebSocket
+#   2. Registers function "inference::get_response"
+#   3. Registers HTTP trigger POST /v1/chat/completions
+#   4. Blocks forever, waiting for incoming calls
+ExecStart=/opt/caller-worker/may-2026/devops/quickstart/workers/caller-worker/node_modules/.bin/tsx \
+    /opt/caller-worker/may-2026/devops/quickstart/workers/caller-worker/src/worker.ts
+
+# ── Restart policy ────────────────────────────────────────────────────────────
+Restart=always
+RestartSec=5s
+TimeoutStartSec=60
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=caller-worker
+
+# ── Resource limits ───────────────────────────────────────────────────────────
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,51 @@
+[Unit]
+Description=iii inference-worker — Gemma 3 270M GGUF model inference via RPC
+Documentation=https://github.com/Alchemyst-ai/hiring/tree/main/may-2026/devops
+
+# Start after the network is up (the worker connects out to the Engine via WebSocket)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+
+# Working directory is the inference-worker's source folder
+WorkingDirectory=/opt/inference-worker/may-2026/devops/quickstart/workers/inference-worker
+
+# ── Environment ───────────────────────────────────────────────────────────────
+# EnvironmentFile loads key=value pairs as environment variables.
+# setup-inference.sh writes this file with III_URL and HF_HOME set.
+EnvironmentFile=/opt/inference-worker-env
+
+# ── Main command ──────────────────────────────────────────────────────────────
+# We use the Python binary from the virtual environment created during setup.
+# The venv Python has all required packages (iii-sdk, transformers, torch, etc.)
+# installed; the system Python does not.
+ExecStart=/opt/inference-worker/venv/bin/python \
+    /opt/inference-worker/may-2026/devops/quickstart/workers/inference-worker/inference_worker.py
+
+# ── Restart policy ────────────────────────────────────────────────────────────
+Restart=always
+# Wait longer (10s) because the model takes ~60s to reload after a crash
+RestartSec=10s
+
+# ── Startup timeout ───────────────────────────────────────────────────────────
+# The model loads into RAM on first start.  On e2-medium (4 GB RAM, no GPU),
+# loading Gemma 270M + PyTorch takes ~60-90 seconds.
+# Setting TimeoutStartSec to 300 (5 min) prevents systemd from thinking the
+# service "failed to start" while the model is still loading.
+TimeoutStartSec=300
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=inference-worker
+
+# ── Resource limits ───────────────────────────────────────────────────────────
+LimitNOFILE=65536
+# PyTorch can create many threads; allow a generous number of processes
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

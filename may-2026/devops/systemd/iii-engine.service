@@ -1,0 +1,48 @@
+[Unit]
+Description=iii Engine — RPC message router for inference workers
+Documentation=https://iii.dev/docs/using-iii/engine
+
+# The engine is a long-running server process.
+# We wait for the full network stack to be ready so the WebSocket port
+# (49134) can be bound immediately.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+
+# All engine state (config, SQLite DB) lives under /opt/iii
+WorkingDirectory=/opt/iii
+
+# ── Main command ──────────────────────────────────────────────────────────────
+# --config: path to the engine's YAML config (built in setup-engine.sh)
+# The engine opens a WebSocket on port 49134 and an HTTP server on port 3111
+ExecStart=/usr/local/bin/iii --config /opt/iii/config.yaml
+
+# ── Restart policy ────────────────────────────────────────────────────────────
+# "always" means: restart even if the process exits with code 0.
+# This ensures the engine comes back up after an OS signal or OOM kill.
+Restart=always
+# Wait 5 seconds between restart attempts to avoid a crash loop hammering CPU
+RestartSec=5s
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+# All stdout/stderr goes to the systemd journal.
+# View with: journalctl -u iii-engine -f
+# Or since last boot: journalctl -u iii-engine -b
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=iii-engine
+
+# ── Resource limits ───────────────────────────────────────────────────────────
+# NOFILE: max open file descriptors.
+# The engine keeps one WebSocket connection open per worker (2 workers = 2 FDs),
+# but 65536 is the standard safe value for server processes.
+LimitNOFILE=65536
+
+[Install]
+# "multi-user.target" is the systemd state representing a fully booted Linux
+# system with all services running.  WantedBy here creates a symlink that
+# systemd follows at boot time — effectively "start this service on every boot".
+WantedBy=multi-user.target
