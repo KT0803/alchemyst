@@ -77,7 +77,13 @@ def run_inference_handler(payload: Dict[str, str | List[Dict[str, Any]]]) -> Dic
     text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
-    output = model.generate(**inputs, max_new_tokens=32000)
+    output = model.generate(
+        **inputs,
+        max_new_tokens=200,
+        do_sample=True,
+        temperature=0.7,
+        repetition_penalty=1.3,   # prevents the model from repeating itself
+    )
     result = tokenizer.decode(output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True)
 
     print(result)
@@ -96,7 +102,9 @@ def run_inference_handler(payload: Dict[str, str | List[Dict[str, Any]]]) -> Dic
     #     }
     # )
     # result["running_inference"] = new_result
-    return result
+    # Wrap in a dict so the caller-worker can JSON-serialize it properly.
+    # Returning a bare string causes Python to serialize it as {"0": "c", "1": "h", ...}
+    return {"text": result}
 
 # def add_handler(payload: dict) -> dict:
 #     a = payload.get("a", 0)
