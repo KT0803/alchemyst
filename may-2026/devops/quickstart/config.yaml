@@ -40,7 +40,4 @@ workers:
         - PUT
         - DELETE
         - OPTIONS
-  - name: inference-worker
-    worker_path: /Users/krrishtaneja/Alchemyst/alchemyst/may-2026/devops/quickstart/workers/inference-worker
-  - name: caller-worker
-    worker_path: /Users/krrishtaneja/Alchemyst/alchemyst/may-2026/devops/quickstart/workers/caller-worker
+

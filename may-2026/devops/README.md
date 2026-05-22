@@ -139,8 +139,8 @@ gcloud auth application-default login
 ### 3. Clone this repository
 
 ```bash
-git clone https://github.com/Alchemyst-ai/hiring.git
-cd hiring/may-2026/devops
+git clone https://github.com/KT0803/alchemyst.git
+cd alchemyst/may-2026/devops
 ```
 
 ### 4. Configure Terraform variables
@@ -264,7 +264,7 @@ Nothing is left running (and no costs continue).
 ```json
 {
   "result": {
-    "A VPC, or Virtual Private Cloud, is an isolated virtual network within a public cloud that allows you to define and control your own IP address space, subnets, and routing rules.",
+    "text": "A VPC, or Virtual Private Cloud, is an isolated virtual network within a public cloud that allows you to define and control your own IP address space, subnets, and routing rules.",
     "success": "You've connected two workers and they're interoperating seamlessly, now let's add a few more workers to expand this project's functionality."
   }
 }
@@ -291,7 +291,7 @@ $ curl -X POST http://34.93.155.42/v1/chat/completions \
 ```json
 {
   "result": {
-    "2 + 2 = 4",
+    "text": "2 + 2 = 4",
     "success": "You've connected two workers and they're interoperating seamlessly, now let's add a few more workers to expand this project's functionality."
   }
 }

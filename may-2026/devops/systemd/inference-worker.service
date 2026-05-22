@@ -3,8 +3,8 @@ Description=iii inference-worker — Gemma 3 270M GGUF model inference via RPC
 Documentation=https://github.com/Alchemyst-ai/hiring/tree/main/may-2026/devops
 
 # Start after the network is up (the worker connects out to the Engine via WebSocket)
-After=network-online.target
-Wants=network-online.target
+After=network-online.target iii-engine.service
+Wants=network-online.target iii-engine.service
 
 [Service]
 Type=simple
