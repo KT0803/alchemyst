@@ -1,0 +1,24 @@
+# terraform/terraform.tfvars.example
+#
+# Copy this file to terraform.tfvars and fill in your values.
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# IMPORTANT: Add terraform.tfvars to .gitignore before committing!
+# The file below is safe to commit — it's just an example with placeholder values.
+
+# ─── REQUIRED ─────────────────────────────────────────────────────────────────
+# Your GCP project ID.
+# Find it in the Cloud Console at the top of the page, or run:
+#   gcloud config get-value project
+project_id = "YOUR_GCP_PROJECT_ID"
+
+# ─── OPTIONAL (defaults match the assignment spec) ────────────────────────────
+# GCP region for the subnet and Cloud NAT (Mumbai, India)
+region = "asia-south1"
+
+# Specific availability zone within the region
+zone = "asia-south1-a"
+
+# VM size for all 4 instances (2 vCPU, 4 GB RAM)
+# To use a larger VM: "e2-standard-2", "e2-standard-4", "n2-standard-4"
+machine_type = "e2-medium"
