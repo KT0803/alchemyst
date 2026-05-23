@@ -430,4 +430,4 @@ Large GPU VMs are expensive. Options:
 
 ---
 
-*Assignment by Krrishh Taneja | Alchemyst DevOps Internship May 2026*
+*Assignment by Krrish Taneja | Alchemyst DevOps Internship — May 2026*
